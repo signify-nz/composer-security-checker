@@ -1,0 +1,24 @@
+{
+    "name": "signify-nz/composer-security-checker",
+    "description": "A security checker for your composer.lock",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "composer",
+        "security",
+        "checker"
+    ],
+    "authors": [
+        {
+            "name": "Signify Ltd",
+            "homepage": "https://www.signify.co.nz/"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/signify-nz/composer-security-checker/issues"
+    },
+    "autoload": {
+        "psr-4": {
+            "Signify\\SecurityChecker\\": "src/"
+        }
+    }
+}
