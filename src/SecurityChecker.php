@@ -47,18 +47,27 @@ class SecurityChecker
     /**
      * Checks a composer.lock file for vulnerable dependencies.
      *
-     * @param string $lock The path to the composer.lock file
+     * @param string|array $lock The absolute path to the composer.lock file, or the json_decoded array.
      * @return string[]
      * @throws InvalidArgumentException When the lock file does not exist or contains data in the wrong format.
      */
-    public function check(string $lock): array
+    public function check($lock): array
     {
-        if (!is_file($lock)) {
-            throw new InvalidArgumentException('Lock file does not exist.');
-        }
-        $lockContents = json_decode(file_get_contents($lock), true);
-        if (!is_array($lockContents)) {
-            throw new InvalidArgumentException('Lock file does not contain correct format.');
+        if (is_string($lock)) {
+            if (!is_file($lock)) {
+                throw new InvalidArgumentException('Lock file does not exist.');
+            }
+            $lockContents = json_decode(file_get_contents($lock), true);
+            if (!is_array($lockContents)) {
+                throw new InvalidArgumentException('Lock file does not contain correct format.');
+            }
+        } else if (is_array($lock)) {
+            $lockContents = $lock;
+        } else {
+            throw new InvalidArgumentException(
+                '$lock must be the absolute path to the composer.lock file, '
+                . 'or the json_decoded associative array of the composer.lock contents.'
+            );
         }
         return $this->checkFromJson($lockContents);
     }
@@ -70,7 +79,7 @@ class SecurityChecker
      * @return string[]
      * @throws InvalidArgumentException When the lock file does not exist
      */
-    public function checkFromJson(array $lock): array
+    protected function checkFromJson(array $lock): array
     {
         $vulnerabilities = [];
         $zeroUTC = strtotime('1970-01-01T00:00:00+00:00');
