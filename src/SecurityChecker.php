@@ -78,12 +78,12 @@ class SecurityChecker
                             }
                             // For dev packages, skip if not using the advisory branch is older than installed version.
                             $packageTimestamp = strtotime($package['time'] . ' UTC');
-                            if ($packageTimestamp === $zeroUTC || $packageTimestamp > strtotime($branch['time'] . ' UTC')) {
+                            if ($packageTimestamp === $zeroUTC || $packageTimestamp > $branch['time']) {
                                 continue;
                             }
                         } else {
                             // For stable packages, skip if advisory constraints don't satisfy installed version.
-                            if (!Semver::satisfies($package['version'], $branch['versions'])) {
+                            if (!Semver::satisfies($package['version'], implode(',', $branch['versions']))) {
                                 continue;
                             }
                         }
