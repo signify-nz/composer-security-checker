@@ -1,7 +1,7 @@
 # Composer Security Checker
 Inspired by [sensiolabs/security-checker](https://github.com/sensiolabs/security-checker) and [fabpot/local-php-security-checker](https://github.com/fabpot/local-php-security-checker).
 
-The Composer Security Checker provides an API for checking if your PHP application has dependencies with known security vulnerabilities. If uses the [PHP Security Advisories Database](https://github.com/FriendsOfPHP/security-advisories) - the same database used by [fabpot/local-php-security-checker](https://github.com/fabpot/local-php-security-checker) and the [Symfony CLI](https://symfony.com/doc/current/setup.html#security-checker).
+The Composer Security Checker provides an API for checking if your PHP application has dependencies with known security vulnerabilities. It uses the [PHP Security Advisories Database](https://github.com/FriendsOfPHP/security-advisories) - the same database used by [fabpot/local-php-security-checker](https://github.com/fabpot/local-php-security-checker) and the [Symfony CLI](https://symfony.com/doc/current/setup.html#security-checker).
 
 It can be useful, for example, for applications that have a dashboard where you can display a clear warning if vulnerabilities are detected.
 
