@@ -144,7 +144,6 @@ class SecurityChecker
         $zip->open($file);
         $zip->extractTo($this->advisoriesDir);
         $zip->close();
-        fclose($file);
 
         //TODO: Validate using validator.php
 
