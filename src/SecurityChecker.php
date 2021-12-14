@@ -28,6 +28,7 @@ class SecurityChecker
                 'advisories-dir' => sys_get_temp_dir() . '/signify-nz-security/advisories',
                 'advisories-stale-after' => 86400, // 24 hrs in seconds.
                 'include-dev-packages' => true,
+                'guzzle-options' => [],
             ],
             $options
         );
@@ -194,7 +195,7 @@ class SecurityChecker
 
         // Fetch advisories zip from github.
         $client = new GuzzleClient();
-        $response = $client->request('GET', self::ADVISORIES_URL);
+        $response = $client->request('GET', self::ADVISORIES_URL, $this->options['guzzle-options']);
         if ($response->getStatusCode() >= 300) {
             throw new LogicException('Got status code ' . $response->getStatusCode() . ' when requesting advisories.');
         }
