@@ -161,6 +161,8 @@ class SecurityChecker
             return;
         }
 
+        $this->advisories = [];
+
         // Scan for organisation directories.
         $dir = $this->advisoriesDir . '/security-advisories-master';
         foreach ((array)scandir($dir) as $org) {
@@ -192,8 +194,6 @@ class SecurityChecker
                 }
             }
         }
-
-        $this->advisories = [];
     }
 
     protected function getPackages(array $lock)
