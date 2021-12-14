@@ -46,7 +46,7 @@ class SecurityChecker
      * @return string[]
      * @throws InvalidArgumentException When the lock file does not exist or contains data in the wrong format.
      */
-    public function check(string $lock)
+    public function check(string $lock): array
     {
         if (!is_file($lock)) {
             throw new InvalidArgumentException('Lock file does not exist.');
@@ -65,7 +65,7 @@ class SecurityChecker
      * @return string[]
      * @throws InvalidArgumentException When the lock file does not exist
      */
-    public function checkFromJson(array $lock)
+    public function checkFromJson(array $lock): array
     {
         $vulnerabilities = [];
         $zeroUTC = strtotime('1970-01-01T00:00:00+00:00');
@@ -136,7 +136,7 @@ class SecurityChecker
         return false;
     }
 
-    protected function fetchAdvisories()
+    protected function fetchAdvisories(): void
     {
         $advisoriesDir = $this->options['advisories-dir'];
         $timestampFile = $advisoriesDir . '/timestamp.txt';
@@ -177,7 +177,7 @@ class SecurityChecker
         return ((int)$timestamp) < (time() - $this->options['advisories-stale-after']);
     }
 
-    protected function instantiateAdvisories()
+    protected function instantiateAdvisories(): void
     {
         if (!empty($this->advisories)) {
             return;
@@ -218,7 +218,7 @@ class SecurityChecker
         }
     }
 
-    protected function getPackages(array $lock)
+    protected function getPackages(array $lock): array
     {
         $packages = [];
         foreach (['packages', 'packages-dev'] as $key) {
