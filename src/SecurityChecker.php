@@ -34,6 +34,9 @@ class SecurityChecker
         if (!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) {
             throw new InvalidArgumentException("Directory '$advisoriesDir' must be writable.");
         }
+
+        $this->fetchAdvisories();
+        $this->instantiateAdvisories();
     }
 
     /**
@@ -64,8 +67,6 @@ class SecurityChecker
      */
     public function checkFromJson(array $lock)
     {
-        $this->fetchAdvisories();
-        $this->instantiateAdvisories();
         $vulnerabilities = [];
         $zeroUTC = strtotime('1970-01-01T00:00:00+00:00');
         foreach ($this->getPackages($lock) as $package) {
