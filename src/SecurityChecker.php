@@ -3,7 +3,7 @@
 namespace Signify\SecurityChecker;
 
 use Composer\Semver\Semver;
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use InvalidArgumentException;
 use LogicException;
 use Symfony\Component\Yaml\Yaml;
@@ -193,7 +193,7 @@ class SecurityChecker
         }
 
         // Fetch advisories zip from github.
-        $client = new Client();
+        $client = new GuzzleClient();
         $response = $client->request('GET', self::ADVISORIES_URL);
         if ($response->getStatusCode() >= 300) {
             throw new LogicException('Got status code ' . $response->getStatusCode() . ' when requesting advisories.');
