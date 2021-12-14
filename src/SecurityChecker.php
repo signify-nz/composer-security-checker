@@ -129,6 +129,8 @@ class SecurityChecker
 
         if (is_dir($this->advisoriesDir)) {
             //TODO: Compare master commit hash and don't re-fetch if it's already there.
+            $this->hasAdvisories = true;
+            return;
         }
 
         // Fetch advisories zip from github.
