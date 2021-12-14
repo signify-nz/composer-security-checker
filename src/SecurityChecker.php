@@ -61,7 +61,7 @@ class SecurityChecker
             if (!is_array($lockContents)) {
                 throw new InvalidArgumentException('Lock file does not contain correct format.');
             }
-        } else if (is_array($lock)) {
+        } elseif (is_array($lock)) {
             $lockContents = $lock;
         } else {
             throw new InvalidArgumentException(
@@ -214,7 +214,7 @@ class SecurityChecker
         file_put_contents($file, $response->getBody());
 
         // Unzip advisories repository.
-        $zip = new ZipArchive;
+        $zip = new ZipArchive();
         $zip->open($file);
         $zip->extractTo($advisoriesDir);
         $zip->close();
