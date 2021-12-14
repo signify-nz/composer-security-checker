@@ -127,6 +127,28 @@ class SecurityChecker
     }
 
     /**
+     * Get an array of packages which are included in the composer lock.
+     *
+     * @param array $lock Composer lock JSON as an associative array.
+     * @return array
+     */
+    public function getPackages(array $lock, bool $includeDev = true): array
+    {
+        $packages = [];
+        $packageKeys = ['packages'];
+        if ($includeDev) {
+            $packageKeys[] = 'packages-dev';
+        }
+        foreach ($packageKeys as $key) {
+            if (!array_key_exists($key, $lock)) {
+                continue;
+            }
+            $packages = array_merge($packages, $lock[$key]);
+        }
+        return $packages;
+    }
+
+    /**
      * Normalise a dev package version to easily compare with advisory branches.
      *
      * @param string $version
@@ -245,23 +267,5 @@ class SecurityChecker
                 }
             }
         }
-    }
-
-    /**
-     * Get an array of packages which are included in the composer lock.
-     *
-     * @param array $lock Composer lock JSON as an associative array.
-     * @return array
-     */
-    protected function getPackages(array $lock): array
-    {
-        $packages = [];
-        foreach (['packages', 'packages-dev'] as $key) {
-            if (!array_key_exists($key, $lock)) {
-                continue;
-            }
-            $packages = array_merge($packages, $lock[$key]);
-        }
-        return $packages;
     }
 }
