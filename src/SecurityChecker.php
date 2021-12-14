@@ -27,6 +27,7 @@ class SecurityChecker
             [
                 'advisories-dir' => sys_get_temp_dir() . '/signify-nz-security/advisories',
                 'advisories-stale-after' => 86400, // 24 hrs in seconds.
+                'include-dev-packages' => true,
             ],
             $options
         );
@@ -73,7 +74,7 @@ class SecurityChecker
         $vulnerabilities = [];
         $zeroUTC = strtotime('1970-01-01T00:00:00+00:00');
         // Check all packages for vulnerabilities.
-        foreach ($this->getPackages($lock) as $package) {
+        foreach ($this->getPackages($lock, $this->options['include-dev-packages']) as $package) {
             $advisories = [];
             // Check for advisories about this specific package.
             if (array_key_exists($package['name'], $this->advisories)) {
