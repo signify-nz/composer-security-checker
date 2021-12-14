@@ -101,7 +101,7 @@ class SecurityChecker
                 ];
             }
         }
-        return $advisories;
+        return $vulnerabilities;
     }
 
     protected function normalizeVersion(string $version): string
