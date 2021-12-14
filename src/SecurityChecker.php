@@ -3,7 +3,6 @@
 namespace Signify\SecurityChecker;
 
 use Composer\Semver\Semver;
-use Composer\Semver\VersionParser;
 use GuzzleHttp\Client;
 use InvalidArgumentException;
 use LogicException;
@@ -18,8 +17,6 @@ class SecurityChecker
     private $advisories;
     private $hasAdvisories = false;
 
-    private $versionParser;
-
     /**
      * @param string|null $advisoriesDir Directory where advisories URL should be written.
      * @throws InvalidArgumentException
@@ -33,7 +30,6 @@ class SecurityChecker
         } else {
             $this->advisoriesDir = sys_get_temp_dir() . '/signify-nz/advisories';
         }
-        $this->versionParser = new VersionParser();
     }
 
     /**
@@ -71,7 +67,7 @@ class SecurityChecker
         foreach ($this->getPackages($lock) as $package) {
             $advisories = [];
             if (array_key_exists($package['name'], $this->advisories)) {
-                $normalisedVersion = $this->versionParser->normalize($package['version']);
+                $normalisedVersion = $this->normalizeVersion($package['version']);
                 foreach ($this->advisories[$package['name']] as $advisory) {
                     foreach ($advisory['branches'] as $branchName => $branch) {
                         if ($this->isDev($package['version'])) {
@@ -106,6 +102,13 @@ class SecurityChecker
             }
         }
         return $advisories;
+    }
+
+    protected function normalizeVersion(string $version): string
+    {
+        $version = StringUtil::removeFromStart($version, 'dev-');
+        $version = StringUtil::removeFromEnd($version, ['.x-dev', '-dev']);
+        return $version;
     }
 
     protected function isDev(string $rawVersion): bool
