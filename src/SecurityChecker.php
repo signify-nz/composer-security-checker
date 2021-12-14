@@ -15,13 +15,13 @@ class SecurityChecker
 
     private $advisoriesDir;
     private $advisories;
-    private $hasAdvisories = false;
+    private $options;
 
     /**
      * @param string|null $advisoriesDir Directory where advisories URL should be written.
      * @throws InvalidArgumentException
      */
-    public function __construct(string $advisoriesDir = null)
+    public function __construct(string $advisoriesDir = null, array $options = [])
     {
         if ($advisoriesDir) {
             if (!is_dir($advisoriesDir) || !is_writable($advisoriesDir)) {
@@ -30,6 +30,13 @@ class SecurityChecker
         } else {
             $this->advisoriesDir = sys_get_temp_dir() . '/signify-nz/advisories';
         }
+
+        $this->options = array_merge(
+            [
+                'advisories-stale-after' => 86400, // 24 hrs in seconds.
+            ],
+            $options
+        );
     }
 
     /**
@@ -104,6 +111,16 @@ class SecurityChecker
         return $vulnerabilities;
     }
 
+    /**
+     * Get the array of options for this checker.
+     *
+     * @return string[]
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
     protected function normalizeVersion(string $version): string
     {
         $version = StringUtil::removeFromStart($version, 'dev-');
@@ -123,13 +140,13 @@ class SecurityChecker
 
     protected function fetchAdvisories()
     {
-        if ($this->hasAdvisories) {
-            return;
-        }
-
-        if (is_dir($this->advisoriesDir)) {
-            //TODO: Compare master commit hash and don't re-fetch if it's already there.
-            $this->hasAdvisories = true;
+        $timestampFile = $this->advisoriesDir . '/timestamp.txt';
+        // Don't fetch if we still have advisories and they aren't stale.
+        if (
+            is_dir($this->advisoriesDir)
+            && is_file($timestampFile)
+            && !$this->isStale(file_get_contents($timestampFile))
+        ) {
             return;
         }
 
@@ -150,9 +167,19 @@ class SecurityChecker
         $zip->extractTo($this->advisoriesDir);
         $zip->close();
 
-        //TODO: Validate using validator.php
+        // Add timestamp to the directory so we don't refetch unnecessarily.
+        file_put_contents($timestampFile, time());
+    }
 
-        $this->hasAdvisories = true;
+    /**
+     * Check if a timestamp is outside the permitted timeframe.
+     *
+     * @param string|int $timestamp The unix timestamp to check for staleness.
+     * @return boolean
+     */
+    protected function isStale($timestamp): bool
+    {
+        return ((int)$timestamp) < (time() - $this->options['advisories-stale-after']);
     }
 
     protected function instantiateAdvisories()
