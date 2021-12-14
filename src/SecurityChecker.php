@@ -13,30 +13,27 @@ class SecurityChecker
 {
     public const ADVISORIES_URL = 'https://codeload.github.com/FriendsOfPHP/security-advisories/zip/master';
 
-    private $advisoriesDir;
     private $advisories;
     private $options;
 
     /**
-     * @param string|null $advisoriesDir Directory where advisories URL should be written.
+     * @param array $options The options for this checker.
      * @throws InvalidArgumentException
      */
-    public function __construct(string $advisoriesDir = null, array $options = [])
+    public function __construct(array $options = [])
     {
-        if ($advisoriesDir) {
-            if (!is_dir($advisoriesDir) || !is_writable($advisoriesDir)) {
-                throw new InvalidArgumentException("Directory '$advisoriesDir' must exist and be writable.");
-            }
-        } else {
-            $this->advisoriesDir = sys_get_temp_dir() . '/signify-nz/advisories';
-        }
-
         $this->options = array_merge(
             [
+                'advisories-dir' => sys_get_temp_dir() . '/signify-nz-security/advisories',
                 'advisories-stale-after' => 86400, // 24 hrs in seconds.
             ],
             $options
         );
+
+        $advisoriesDir = $this->options['advisories-dir'];
+        if (!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) {
+            throw new InvalidArgumentException("Directory '$advisoriesDir' must be writable.");
+        }
     }
 
     /**
@@ -140,13 +137,10 @@ class SecurityChecker
 
     protected function fetchAdvisories()
     {
-        $timestampFile = $this->advisoriesDir . '/timestamp.txt';
+        $advisoriesDir = $this->options['advisories-dir'];
+        $timestampFile = $advisoriesDir . '/timestamp.txt';
         // Don't fetch if we still have advisories and they aren't stale.
-        if (
-            is_dir($this->advisoriesDir)
-            && is_file($timestampFile)
-            && !$this->isStale(file_get_contents($timestampFile))
-        ) {
+        if (is_file($timestampFile) && !$this->isStale(file_get_contents($timestampFile))) {
             return;
         }
 
@@ -164,7 +158,7 @@ class SecurityChecker
         // Unzip advisories repository.
         $zip = new ZipArchive;
         $zip->open($file);
-        $zip->extractTo($this->advisoriesDir);
+        $zip->extractTo($advisoriesDir);
         $zip->close();
 
         // Add timestamp to the directory so we don't refetch unnecessarily.
@@ -191,7 +185,7 @@ class SecurityChecker
         $this->advisories = [];
 
         // Scan for organisation directories.
-        $dir = $this->advisoriesDir . '/security-advisories-master';
+        $dir = $this->options['advisories-dir'] . '/security-advisories-master';
         foreach ((array)scandir($dir) as $org) {
             $orgDir = $dir . '/' . $org;
             // Ignore hidden directories and dot directories, and any files.
