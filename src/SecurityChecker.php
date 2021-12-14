@@ -18,10 +18,11 @@ class SecurityChecker
 
     /**
      * @param array $options The options for this checker.
-     * @throws InvalidArgumentException
+     * @throws InvalidArgumentException if the advisories directory isn't writable.
      */
     public function __construct(array $options = [])
     {
+        // Set options.
         $this->options = array_merge(
             [
                 'advisories-dir' => sys_get_temp_dir() . '/signify-nz-security/advisories',
@@ -30,11 +31,13 @@ class SecurityChecker
             $options
         );
 
+        // Confirm advisories directory can be written to (and create it if needs be)
         $advisoriesDir = $this->options['advisories-dir'];
         if (!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) {
             throw new InvalidArgumentException("Directory '$advisoriesDir' must be writable.");
         }
 
+        // Get the advisories.
         $this->fetchAdvisories();
         $this->instantiateAdvisories();
     }
@@ -69,11 +72,14 @@ class SecurityChecker
     {
         $vulnerabilities = [];
         $zeroUTC = strtotime('1970-01-01T00:00:00+00:00');
+        // Check all packages for vulnerabilities.
         foreach ($this->getPackages($lock) as $package) {
             $advisories = [];
+            // Check for advisories about this specific package.
             if (array_key_exists($package['name'], $this->advisories)) {
                 $normalisedVersion = $this->normalizeVersion($package['version']);
                 foreach ($this->advisories[$package['name']] as $advisory) {
+                    // Check each branch of the advisory to see if the installed version is affected.
                     foreach ($advisory['branches'] as $branchName => $branch) {
                         if ($this->isDev($package['version'])) {
                             // For dev packages, skip if not using the advisory branch.
@@ -87,7 +93,7 @@ class SecurityChecker
                                 continue;
                             }
                         } else {
-                            // For stable packages, skip if advisory constraints don't satisfy installed version.
+                            // For stable packages, skip if installed version doesn't satisfy the advisory constraints.
                             if (!Semver::satisfies($package['version'], implode(',', $branch['versions']))) {
                                 continue;
                             }
@@ -99,6 +105,7 @@ class SecurityChecker
                     }
                 }
             }
+            // Add relevant advisories to the resultant vulnerabilities array.
             if (!empty($advisories)) {
                 $vulnerabilities[$package['name']] = [
                     'version' => $package['version'],
@@ -119,6 +126,12 @@ class SecurityChecker
         return $this->options;
     }
 
+    /**
+     * Normalise a dev package version to easily compare with advisory branches.
+     *
+     * @param string $version
+     * @return string
+     */
     protected function normalizeVersion(string $version): string
     {
         $version = StringUtil::removeFromStart($version, 'dev-');
@@ -126,9 +139,15 @@ class SecurityChecker
         return $version;
     }
 
-    protected function isDev(string $rawVersion): bool
+    /**
+     * Check if the package version is for a dev package.
+     *
+     * @param string $version
+     * @return boolean
+     */
+    protected function isDev(string $version): bool
     {
-        $version = preg_replace('/"#.+$/', '', $rawVersion);
+        $version = preg_replace('/"#.+$/', '', $version);
         if (StringUtil::startsWith($version, 'dev-') || StringUtil::endsWith($version, '-dev')) {
             return true;
         }
@@ -136,6 +155,11 @@ class SecurityChecker
         return false;
     }
 
+    /**
+     * Fetch advisories from FriendsOfPHP.
+     *
+     * @return void
+     */
     protected function fetchAdvisories(): void
     {
         $advisoriesDir = $this->options['advisories-dir'];
@@ -177,12 +201,16 @@ class SecurityChecker
         return ((int)$timestamp) < (time() - $this->options['advisories-stale-after']);
     }
 
+    /**
+     * Read advisory yaml files from the FriendsOfPHP repo into memory.
+     *
+     * @return void
+     */
     protected function instantiateAdvisories(): void
     {
         if (!empty($this->advisories)) {
             return;
         }
-
         $this->advisories = [];
 
         // Scan for organisation directories.
@@ -210,6 +238,7 @@ class SecurityChecker
                         continue;
                     }
 
+                    // Parse yaml and store advisory against package name.
                     $advisory = Yaml::parseFile($filePath);
                     $packageName = preg_replace('/^composer:\/\//', '', $advisory['reference']);
                     $this->advisories[$packageName][] = $advisory;
@@ -218,6 +247,12 @@ class SecurityChecker
         }
     }
 
+    /**
+     * Get an array of packages which are included in the composer lock.
+     *
+     * @param array $lock Composer lock JSON as an associative array.
+     * @return array
+     */
     protected function getPackages(array $lock): array
     {
         $packages = [];
