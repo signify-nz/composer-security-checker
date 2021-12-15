@@ -48,7 +48,7 @@ class SecurityChecker
      * Checks a composer.lock file for vulnerable dependencies.
      *
      * @param string|array $lock The absolute path to the composer.lock file, or the json_decoded array.
-     * @return string[]
+     * @return array
      * @throws InvalidArgumentException When the lock file does not exist or contains data in the wrong format.
      */
     public function check($lock): array
@@ -76,7 +76,7 @@ class SecurityChecker
      * Checks JSON in the format of a composer.lock file for vulnerable dependencies.
      *
      * @param array $lock The json_decoded array in the format of a composer.lock file
-     * @return string[]
+     * @return array
      * @throws InvalidArgumentException When the lock file does not exist
      */
     protected function checkFromJson(array $lock): array
