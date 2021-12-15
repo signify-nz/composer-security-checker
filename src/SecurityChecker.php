@@ -110,6 +110,9 @@ class SecurityChecker
                             }
                         }
                         // If we got this far, the advisory applies for the installed package.
+                        // Unset the unnecessary information.
+                        unset($advisory['branches']);
+                        unset($advisory['reference']);
                         $advisories[] = $advisory;
                         // Break the branch loop - we've already confirmed this advisory.
                         break;
