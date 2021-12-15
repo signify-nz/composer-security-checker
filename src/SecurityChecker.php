@@ -19,6 +19,7 @@ class SecurityChecker
     /**
      * @param array $options The options for this checker.
      * @throws InvalidArgumentException if the advisories directory isn't writable.
+     * @throws LogicException if the request for the advisories package returns a response code >= 300
      */
     public function __construct(array $options = [])
     {
