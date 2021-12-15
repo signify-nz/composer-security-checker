@@ -20,6 +20,13 @@ $checker = new SecurityChecker();
 $vulnerabilities = $checker->check('/path/to/composer.lock');
 ```
 
+If you want to omit dev dependencies from the check, just pass `false` as the second argument.
+```php
+use Signify\SecurityChecker\SecurityChecker;
+$checker = new SecurityChecker();
+$vulnerabilities = $checker->check('/path/to/composer.lock', false);
+```
+
 If you have already parsed the `composer.lock` file into an associative array, you can pass that to the call to `check` instead:
 ```php
 use Signify\SecurityChecker\SecurityChecker;
@@ -44,5 +51,4 @@ The options you can set are listed in this table.
 | ----------- | ------- | ---------- | ------- |
 | advisories-dir | A writable directory to store the PHP Security Advisories Database | string | A temporary directory (uses [sys_get_temp_dir](https://www.php.net/manual/en/function.sys-get-temp-dir.php)) |
 | advisories-stale-after | Time in seconds that the stored advisories database is valid - it will be fetched again after this time expires. | int | `86400` (24 hours) |
-| include-dev-packages | Whether to include dev packages when checking for security vulnerabilities | boolean | `true` |
 | guzzle-options | Options to pass to the Guzzle client when fetching the advisories database. See [the guzzle docs](https://docs.guzzlephp.org/en/stable/request-options.html) for options. | array | `[]` |

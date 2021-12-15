@@ -27,7 +27,6 @@ class SecurityChecker
             [
                 'advisories-dir' => sys_get_temp_dir() . '/signify-nz-security/advisories',
                 'advisories-stale-after' => 86400, // 24 hrs in seconds.
-                'include-dev-packages' => true,
                 'guzzle-options' => [],
             ],
             $options
@@ -44,10 +43,11 @@ class SecurityChecker
      * Checks a composer.lock file for vulnerable dependencies.
      *
      * @param string|array $lock The absolute path to the composer.lock file, or the json_decoded array.
+     * @param boolean $includeDev If false, the dev dependencies won't be checked.
      * @return array
      * @throws InvalidArgumentException When the lock file does not exist or contains data in the wrong format.
      */
-    public function check($lock): array
+    public function check($lock, bool $includeDev = true): array
     {
         if (is_string($lock)) {
             if (!is_file($lock)) {
@@ -65,22 +65,23 @@ class SecurityChecker
                 . 'or the json_decoded associative array of the composer.lock contents.'
             );
         }
-        return $this->checkFromJson($lockContents);
+        return $this->checkFromJson($lockContents, $includeDev);
     }
 
     /**
      * Checks JSON in the format of a composer.lock file for vulnerable dependencies.
      *
      * @param array $lock The json_decoded array in the format of a composer.lock file
+     * @param boolean $includeDev If false, the dev dependencies won't be checked.
      * @return array
      * @throws InvalidArgumentException When the lock file does not exist
      */
-    protected function checkFromJson(array $lock): array
+    protected function checkFromJson(array $lock, bool $includeDev): array
     {
         $vulnerabilities = [];
         $zeroUTC = strtotime('1970-01-01T00:00:00+00:00');
         // Check all packages for vulnerabilities.
-        foreach ($this->getPackages($lock, $this->options['include-dev-packages']) as $package) {
+        foreach ($this->getPackages($lock, $includeDev) as $package) {
             $advisories = [];
             // Check for advisories about this specific package.
             if (array_key_exists($package['name'], $this->advisories)) {
