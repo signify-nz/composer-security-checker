@@ -245,6 +245,9 @@ class SecurityChecker
         $zip->extractTo($advisoriesDir);
         $zip->close();
 
+        // Remove temporary zip file
+        unlink($file);
+
         // Add timestamp to the directory so we don't refetch unnecessarily.
         file_put_contents($timestampFile, time());
     }
