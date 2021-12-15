@@ -137,6 +137,20 @@ class SecurityChecker
     }
 
     /**
+     * Get an option for this checker.
+     *
+     * @param string $option The option to get.
+     * @return mixed The option value, or null if it doesn't exist.
+     */
+    public function getOption(string $option)
+    {
+        if (isset($this->options[$option])) {
+            return $this->options[$option];
+        }
+        return null;
+    }
+
+    /**
      * Get an array of packages which are included in the composer lock.
      *
      * @param array $lock Composer lock JSON as an associative array.
