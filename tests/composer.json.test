@@ -1,6 +1,8 @@
 {
     "require": {
-        "silverstripe/framework": "4.0.0"
+        "silverstripe/framework": "4.0.0",
+        "symbiote/silverstripe-queuedjobs": "4.0.x-dev#7be5d7025c7005e625da428a8c5ffb8d1dd28f95",
+        "twig/twig": "1.x-dev"
     },
     "require-dev": {
         "phpunit/phpunit": "5.0.10"

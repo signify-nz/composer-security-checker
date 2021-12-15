@@ -156,7 +156,15 @@ final class SecurityCheckerTest extends TestCase
     }
 
      /**
-      * Last updated 2021-12-15
+      * Last updated 2021-12-16
+      *
+      * silverstripe/framework 4.0.0 as a test of direct dependency with its own dependencies with known
+      *     vulnerabilities.
+      * symbiote/silverstripe-queuedjobs 4.0.x-dev with a specific hash given as a test of dev stabilities
+      *     with known vulnerabilities.
+      * twig/twig 1.x-dev as a test of a branch with known vulnerabilities, but at a commit after the
+      *     vulnerability should no longer apply.
+      * phpunit/phpunit 5.0.10 as a test that dev dependencies can be skipped.
       */
     private function getTestVulnerabilities($withDev = true)
     {
@@ -168,6 +176,16 @@ final class SecurityCheckerTest extends TestCase
                         'title' => 'TOCTOU Race Condition enabling remote code execution',
                         'link' => 'https://github.com/thephpleague/flysystem/security/advisories/GHSA-9f46-5r25-5wfm',
                         'cve' => 'CVE-2021-32708',
+                    ],
+                ],
+            ],
+            'silverstripe/admin' => [
+                'version' => '1.4.5',
+                'advisories' => [
+                    [
+                        'title' => 'CVE-2021-36150 - Insert from files link text - Reflective (self) Cross Site Scripting',
+                        'link' => 'https://www.silverstripe.org/download/security-releases/CVE-2021-36150',
+                        'cve' => 'CVE-2021-36150',
                     ],
                 ],
             ],
@@ -309,6 +327,16 @@ final class SecurityCheckerTest extends TestCase
                     ],
                 ],
             ],
+            'symbiote/silverstripe-queuedjobs' => [
+                'version' => '4.0.x-dev',
+                'advisories' => [
+                    [
+                        'title' => 'CVE-2021-27938: XSS in CreateQueuedJobTask',
+                        'link' => 'https://www.silverstripe.org/download/security-releases/cve-2021-27938',
+                        'cve' => 'CVE-2021-27938',
+                    ],
+                ],
+            ]
         ];
 
         if ($withDev) {
