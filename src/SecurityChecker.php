@@ -176,7 +176,7 @@ class SecurityChecker
     protected function validateOptions()
     {
         // Confirm advisories directory can be written to (and create it if needs be)
-        $advisoriesDir = $this->options['advisories-dir'];
+        $advisoriesDir = $this->getOption('advisories-dir');
         $old_umask = umask(0);
         if ((!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) || !is_writable($advisoriesDir)) {
             umask($old_umask);
@@ -221,7 +221,7 @@ class SecurityChecker
      */
     protected function fetchAdvisories(): void
     {
-        $advisoriesDir = $this->options['advisories-dir'];
+        $advisoriesDir = $this->getOption('advisories-dir');
         $timestampFile = $advisoriesDir . '/timestamp.txt';
         // Don't fetch if we still have advisories and they aren't stale.
         if (is_file($timestampFile) && !$this->isStale(file_get_contents($timestampFile))) {
@@ -230,7 +230,7 @@ class SecurityChecker
 
         // Fetch advisories zip from github.
         $client = new GuzzleClient();
-        $response = $client->request('GET', self::ADVISORIES_URL, $this->options['guzzle-options']);
+        $response = $client->request('GET', self::ADVISORIES_URL, $this->getOption('guzzle-options'));
         if ($response->getStatusCode() >= 300) {
             throw new LogicException('Got status code ' . $response->getStatusCode() . ' when requesting advisories.');
         }
@@ -257,7 +257,7 @@ class SecurityChecker
      */
     protected function isStale($timestamp): bool
     {
-        return ((int)$timestamp) < (time() - $this->options['advisories-stale-after']);
+        return ((int)$timestamp) < (time() - $this->getOption('advisories-stale-after'));
     }
 
     /**
@@ -273,7 +273,7 @@ class SecurityChecker
         $this->advisories = [];
 
         // Scan for organisation directories.
-        $dir = $this->options['advisories-dir'] . '/security-advisories-master';
+        $dir = $this->getOption('advisories-dir') . '/security-advisories-master';
         foreach ((array)scandir($dir) as $org) {
             $orgDir = $dir . '/' . $org;
             // Ignore hidden directories and dot directories, and any files.
