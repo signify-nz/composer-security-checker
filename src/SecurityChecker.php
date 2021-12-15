@@ -176,9 +176,12 @@ class SecurityChecker
     {
         // Confirm advisories directory can be written to (and create it if needs be)
         $advisoriesDir = $this->options['advisories-dir'];
-        if (!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) {
+        $old_umask = umask(0);
+        if ((!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) || !is_writable($advisoriesDir)) {
+            umask($old_umask);
             throw new InvalidArgumentException("Directory '$advisoriesDir' must be writable.");
         }
+        umask($old_umask);
     }
 
     /**
