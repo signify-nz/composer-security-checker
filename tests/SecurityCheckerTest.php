@@ -46,7 +46,7 @@ final class SecurityCheckerTest extends TestCase
         mkdir($unwritableDir, 0);
         try {
             new SecurityChecker(['advisories-dir' => $unwritableDir]);
-        } catch(InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             rmdir($unwritableDir);
             throw $e;
         }
@@ -137,173 +137,176 @@ final class SecurityCheckerTest extends TestCase
         $this->assertSame($this->getTestVulnerabilities(), $vulnerabilities);
     }
 
-     private function getDefaultSecurityChecker()
-     {
-         if (!$this->securityChecker) {
+    private function getDefaultSecurityChecker()
+    {
+        if (!$this->securityChecker) {
             $this->securityChecker = new SecurityChecker();
-         }
-         return $this->securityChecker;
-     }
+        }
+        return $this->securityChecker;
+    }
 
-     private function getWritableDir()
-     {
+    private function getWritableDir()
+    {
         return sys_get_temp_dir() . '/security-checker-test';
-     }
+    }
 
-     private function getLockPath()
-     {
-         return dirname(__FILE__) . '/composer.lock.test';
-     }
+    private function getLockPath()
+    {
+        return dirname(__FILE__) . '/composer.lock.test';
+    }
 
      /**
       * Last updated 2021-12-15
       */
-     private function getTestVulnerabilities($withDev = true)
-     {
+    private function getTestVulnerabilities($withDev = true)
+    {
         $vulnerabilities = [
             'league/flysystem' => [
                 'version' => '1.0.70',
                 'advisories' => [
-                     [
+                    [
                         'title' => 'TOCTOU Race Condition enabling remote code execution',
                         'link' => 'https://github.com/thephpleague/flysystem/security/advisories/GHSA-9f46-5r25-5wfm',
                         'cve' => 'CVE-2021-32708',
-                     ],
+                    ],
                 ],
             ],
             'silverstripe/assets' => [
                 'version' => '1.1.0',
                 'advisories' => [
-                     [
-                        'title' => 'CVE-2019-12245: Incorrect access control vulnerability in files uploaded to protected folders',
+                    [
+                        'title' => 'CVE-2019-12245: Incorrect access control vulnerability in files uploaded to '
+                            . 'protected folders',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-12245/',
                         'cve' => 'CVE-2019-12245',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2020-9280: Folders migrated from 3.x may be unsafe to upload to',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2020-9280/',
                         'cve' => 'CVE-2020-9280',
-                     ],
+                    ],
                 ],
             ],
             'silverstripe/framework' => [
                 'version' => '4.0.0',
                 'advisories' => [
-                     [
+                    [
                         'title' => 'CVE-2019-12203: Session fixation in "change password" form',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-12203/',
                         'cve' => 'CVE-2019-12203',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2019-12246: Denial of Service on flush and development URL tools',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-12246',
                         'cve' => 'CVE-2019-12246',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2019-14272: XSS in file titles managed through the CMS',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-14272/',
                         'cve' => 'CVE-2019-14272',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2019-14273: Broken Access control on files',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-14273/',
                         'cve' => 'CVE-2019-14273',
-                     ],
-                     [
-                        'title' => 'CVE-2019-16409: Secureassets and versionedfiles modules can expose versions of protected files',
+                    ],
+                    [
+                        'title' => 'CVE-2019-16409: Secureassets and versionedfiles modules can expose versions of '
+                            . 'protected files',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-16409/',
                         'cve' => 'CVE-2019-16409',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2019-19325: XSS through non-scalar FormField attributes',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-19325/',
                         'cve' => 'CVE-2019-19325',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2019-19326: Web Cache Poisoning through HTTPRequestBuilder',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2019-19326/',
                         'cve' => 'CVE-2019-19326',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2019-5715: Reflected SQL Injection through Form and DataObject',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-021',
                         'cve' => 'CVE-2019-5715',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2020-26138 FormField: with square brackets in field name skips validation',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2020-26138',
                         'cve' => 'CVE-2020-26138',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2020-6164: Information disclosure on /interactive URL path',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2020-6164/',
                         'cve' => 'CVE-2020-6164',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'CVE-2021-25817 XXE: Vulnerability in CSSContentParser',
                         'link' => 'https://www.silverstripe.org/download/security-releases/cve-2021-25817',
                         'cve' => 'CVE-2021-25817',
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2017-007: CSV Excel Macro Injection',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2017-007/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2017-008: SQL injection in full text search of SilverStripe 4',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2017-008/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2017-009: Users inadvertently passing sensitive data to LoginAttempt',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2017-009/',
                         'cve' => null,
-                     ],
-                     [
-                        'title' => 'SS-2017-010: install.php discloses sensitive data by pre-populating DB credential forms',
+                    ],
+                    [
+                        'title' => 'SS-2017-010: install.php discloses sensitive data by pre-populating DB credential '
+                            . 'forms',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2017-010/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-001: Privilege Escalation Risk in Member Edit form',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-001/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-005: isDev and isTest unguarded',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-005/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-008: BackURL validation bypass with malformed URLs',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-008/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-010: Member disclosure in login form',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-010/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-012: Uploaded PHP script execution in assets',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-012/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-018: Database credentials disclosure during connection failure',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-018/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-019: Possible denial of service attack vector when flushing',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-019/',
                         'cve' => null,
-                     ],
-                     [
+                    ],
+                    [
                         'title' => 'SS-2018-020: Potential SQL vulnerability in PostgreSQL database connector',
                         'link' => 'https://www.silverstripe.org/download/security-releases/ss-2018-020/',
                         'cve' => null,
-                     ],
+                    ],
                 ],
             ],
         ];
@@ -323,5 +326,5 @@ final class SecurityCheckerTest extends TestCase
             ]);
         }
         return $vulnerabilities;
-     }
+    }
 }
