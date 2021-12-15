@@ -33,11 +33,7 @@ class SecurityChecker
             $options
         );
 
-        // Confirm advisories directory can be written to (and create it if needs be)
-        $advisoriesDir = $this->options['advisories-dir'];
-        if (!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) {
-            throw new InvalidArgumentException("Directory '$advisoriesDir' must be writable.");
-        }
+        $this->validateOptions();
 
         // Get the advisories.
         $this->fetchAdvisories();
@@ -160,6 +156,15 @@ class SecurityChecker
             $packages = array_merge($packages, $lock[$key]);
         }
         return $packages;
+    }
+
+    protected function validateOptions()
+    {
+        // Confirm advisories directory can be written to (and create it if needs be)
+        $advisoriesDir = $this->options['advisories-dir'];
+        if (!is_dir($advisoriesDir) && !mkdir($advisoriesDir, 0777, true)) {
+            throw new InvalidArgumentException("Directory '$advisoriesDir' must be writable.");
+        }
     }
 
     /**
