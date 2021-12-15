@@ -23,9 +23,13 @@
         "symfony/yaml": "^3.2 || ^4 || ^5",
         "composer/semver": "^1 || ^2 || ^3"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
     "autoload": {
         "psr-4": {
-            "Signify\\SecurityChecker\\": "src/"
+            "Signify\\SecurityChecker\\": "src/",
+            "Signify\\SecurityChecker\\Tests\\": "tests/"
         }
     }
 }
