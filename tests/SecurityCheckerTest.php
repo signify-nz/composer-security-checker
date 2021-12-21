@@ -137,6 +137,36 @@ final class SecurityCheckerTest extends TestCase
         $this->assertEqualsCanonicalizing($this->getTestVulnerabilities(), $vulnerabilities);
     }
 
+    /**
+     * NOTE: If this test fails, confirm if there have been more advisories added for the referenced package.
+     */
+    public function testPrereleaseVersion()
+    {
+        $checker = $this->getDefaultSecurityChecker();
+        $json = [
+            'packages' => [
+                [
+                    'name' => 'symbiote/silverstripe-queuedjobs',
+                    'version' => '4.6.0-rc1',
+                ],
+            ],
+        ];
+        $vulnerabilities = $checker->check($json);
+        $actual = [
+            'symbiote/silverstripe-queuedjobs' => [
+                'version' => '4.6.0-rc1',
+                'advisories' => [
+                    [
+                        'title' => 'CVE-2021-27938: XSS in CreateQueuedJobTask',
+                        'link' => 'https://www.silverstripe.org/download/security-releases/cve-2021-27938',
+                        'cve' => 'CVE-2021-27938',
+                    ],
+                ],
+            ],
+        ];
+        $this->assertEqualsCanonicalizing($actual, $vulnerabilities);
+    }
+
     private function getDefaultSecurityChecker()
     {
         if (!$this->securityChecker) {
