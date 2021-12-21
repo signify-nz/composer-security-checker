@@ -9,6 +9,8 @@ use InvalidArgumentException;
 use LogicException;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use RecursiveRegexIterator;
+use RegexIterator;
 use Symfony\Component\Yaml\Yaml;
 use ZipArchive;
 
@@ -303,37 +305,17 @@ class SecurityChecker
         }
         $this->advisories = [];
 
-        // Scan for organisation directories.
-        $dir = $this->getOption('advisories-dir') . '/security-advisories-master';
-        foreach ((array)scandir($dir) as $org) {
-            $orgDir = $dir . '/' . $org;
-            // Ignore hidden directories and dot directories, and any files.
-            if (strpos($org, '.') === 0 || !is_dir($orgDir)) {
-                continue;
-            }
-
-            // Scan organisations for package directories.
-            foreach ((array)scandir($orgDir) as $package) {
-                $packageDir = $orgDir . '/' . $package;
-                // Ignore hidden directories and dot directories, and any files.
-                if (strpos($package, '.') === 0 || !is_dir($packageDir)) {
-                    continue;
-                }
-
-                // Scan packages for advisories.
-                foreach ((array)scandir($packageDir) as $fileName) {
-                    $filePath = $packageDir . '/' . $fileName;
-                    // Ignore directories and any non-yaml file.
-                    if (!is_file($filePath) || !StringUtil::endsWith($fileName, ['.yml', '.yaml'])) {
-                        continue;
-                    }
-
-                    // Parse yaml and store advisory against package name.
-                    $advisory = Yaml::parseFile($filePath);
-                    $packageName = preg_replace('/^composer:\/\//', '', $advisory['reference']);
-                    $this->advisories[$packageName][] = $advisory;
-                }
-            }
+        // Parse all yaml files.
+        $dir = $this->getOption('advisories-dir') . '/security-advisories-master/';
+        $recursiveIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        // Match all files with a .yml or .yaml extension within our directory which are not in hidden directories.
+        $regex = '/^' . preg_quote($dir, '/') . '[^.]+\.(yaml|yml)$/i';
+        foreach (new RegexIterator($recursiveIterator, $regex, RecursiveRegexIterator::GET_MATCH) as $match) {
+            $filename = $match[0];
+            // Parse yaml and store advisory against package name.
+            $advisory = Yaml::parseFile($filename);
+            $packageName = preg_replace('/^composer:\/\//', '', $advisory['reference']);
+            $this->advisories[$packageName][] = $advisory;
         }
     }
 }
