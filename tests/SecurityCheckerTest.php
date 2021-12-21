@@ -113,7 +113,7 @@ final class SecurityCheckerTest extends TestCase
     {
         $checker = $this->getDefaultSecurityChecker();
         $vulnerabilities = $checker->check($this->getLockPath());
-        $this->assertSame($this->getTestVulnerabilities(), $vulnerabilities);
+        $this->assertEqualsCanonicalizing($this->getTestVulnerabilities(), $vulnerabilities);
     }
 
     /**
@@ -123,7 +123,7 @@ final class SecurityCheckerTest extends TestCase
     {
         $checker = $this->getDefaultSecurityChecker();
         $vulnerabilities = $checker->check($this->getLockPath(), false);
-        $this->assertSame($this->getTestVulnerabilities(false), $vulnerabilities);
+        $this->assertEqualsCanonicalizing($this->getTestVulnerabilities(false), $vulnerabilities);
     }
 
     /**
@@ -134,7 +134,7 @@ final class SecurityCheckerTest extends TestCase
         $checker = $this->getDefaultSecurityChecker();
         $json = json_decode(file_get_contents($this->getLockPath()), true);
         $vulnerabilities = $checker->check($json);
-        $this->assertSame($this->getTestVulnerabilities(), $vulnerabilities);
+        $this->assertEqualsCanonicalizing($this->getTestVulnerabilities(), $vulnerabilities);
     }
 
     private function getDefaultSecurityChecker()
