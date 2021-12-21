@@ -3,15 +3,20 @@
 namespace Signify\SecurityChecker;
 
 use Composer\Semver\Semver;
+use FilesystemIterator;
 use GuzzleHttp\Client as GuzzleClient;
 use InvalidArgumentException;
 use LogicException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Yaml\Yaml;
 use ZipArchive;
 
 class SecurityChecker
 {
     public const ADVISORIES_URL = 'https://codeload.github.com/FriendsOfPHP/security-advisories/zip/master';
+    // Don't allow execution, since we're grabbing files from a source we don't control.
+    public const FILE_PERMISSIONS = 0666;
 
     private $advisories;
     private $options;
@@ -246,11 +251,33 @@ class SecurityChecker
         $zip->extractTo($advisoriesDir);
         $zip->close();
 
+        // Ensure all files have correct permissions.
+        $this->setFilePermissionsRecursive($advisoriesDir);
+
         // Remove temporary zip file
         unlink($file);
 
         // Add timestamp to the directory so we don't refetch unnecessarily.
         file_put_contents($timestampFile, time());
+        chmod($timestampFile, self::FILE_PERMISSIONS);
+    }
+
+    /**
+     * Recursively set permissions for all files nested inside some directory.
+     *
+     * @param string $dir
+     * @return void
+     * @throws InvalidArgumentException if $dir is not a directory.
+     */
+    private function setFilePermissionsRecursive(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            throw new InvalidArgumentException("$dir must be a directory.");
+        }
+        $recursion = new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS);
+        foreach (new RecursiveIteratorIterator($recursion) as $item) {
+            chmod($item->getPathname(), self::FILE_PERMISSIONS);
+        }
     }
 
     /**
