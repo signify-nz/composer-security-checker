@@ -306,7 +306,9 @@ class SecurityChecker
 
         // Parse all yaml files.
         $dir = $this->getOption('advisories-dir') . '/security-advisories-master/';
-        $recursiveIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        $recursiveIterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS)
+        );
         // Match all files with a .yml or .yaml extension within our directory which are not in hidden directories.
         $regex = '/^' . preg_quote($dir, '/') . '[^.]+\.(yaml|yml)$/i';
         foreach (new RegexIterator($recursiveIterator, $regex, RecursiveRegexIterator::GET_MATCH) as $match) {
