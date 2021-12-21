@@ -103,7 +103,7 @@ class SecurityChecker
                             if ($branchName !== $normalisedVersion) {
                                 continue;
                             }
-                            // For dev packages, skip if not using the advisory branch is older than installed version.
+                            // For dev packages, skip if the advisory branch is older than the installed version.
                             $packageTimestamp = strtotime($package['time'] . ' UTC');
                             if ($packageTimestamp === $zeroUTC || $packageTimestamp > $branch['time']) {
                                 continue;
