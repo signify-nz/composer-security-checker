@@ -213,7 +213,8 @@ final class SecurityCheckerTest extends TestCase
                 'version' => '1.4.5',
                 'advisories' => [
                     [
-                        'title' => 'CVE-2021-36150 - Insert from files link text - Reflective (self) Cross Site Scripting',
+                        'title' => 'CVE-2021-36150 - Insert from files link text - Reflective (self) Cross Site '
+                            . 'Scripting',
                         'link' => 'https://www.silverstripe.org/download/security-releases/CVE-2021-36150',
                         'cve' => 'CVE-2021-36150',
                     ],
