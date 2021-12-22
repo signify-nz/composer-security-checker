@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/signify-nz/composer-security-checker.svg?branch=master)](https://app.travis-ci.com/github/signify-nz/composer-security-checker)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/signify-nz/composer-security-checker/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/signify-nz/composer-security-checker/?branch=master)
+[![codecov](https://codecov.io/gh/signify-nz/composer-security-checker/branch/master/graph/badge.svg?token=GIB8EIDVDY)](https://codecov.io/gh/signify-nz/composer-security-checker)
+
 # Composer Security Checker
 Inspired by [sensiolabs/security-checker](https://github.com/sensiolabs/security-checker) and [fabpot/local-php-security-checker](https://github.com/fabpot/local-php-security-checker).
 
